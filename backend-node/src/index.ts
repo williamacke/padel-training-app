@@ -8,6 +8,7 @@ import { CourtController } from "./controllers/courtController";
 import { PadelController } from "./controllers/padelController";
 import { CourtAvailabilityController } from "./controllers/courtAvailabilityController";
 import { CourtTimeSlotController } from "./controllers/courtTimeSlotController";
+import { AdminController } from "./controllers/adminController";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ const courtController = new CourtController();
 const padelController = new PadelController();
 const courtAvailabilityController = new CourtAvailabilityController();
 const courtTimeSlotController = new CourtTimeSlotController();
+const adminController = new AdminController();
 
 // Configure CORS with specific options
 app.use(
@@ -121,6 +123,16 @@ app.get("/api/courts/:courtId/timeslot", (req, res) => {
 app.put("/api/courts/:courtId/timeslot", (req, res) => {
   return courtTimeSlotController.setCourtTimeSlot(req, res);
 });
+
+// Admin routes
+app.get("/api/admin/trainers", authMiddleware, (req, res) =>
+  adminController.getTrainers(req, res)
+);
+app.get(
+  "/api/admin/trainers/:trainerId/availability",
+  authMiddleware,
+  (req, res) => adminController.getTrainerAvailability(req, res)
+);
 
 // Error handling middleware
 app.use(
