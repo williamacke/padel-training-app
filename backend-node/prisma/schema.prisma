@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  username      String      @unique
+  email         String      @unique
+  password      String
+  role          Role        @default(PLAYER)
+  gender        Gender
+  firstName     String?
+  lastName      String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  menLevel      MenLevel?
+  womenLevel    WomenLevel?
+  bio           String?
+  birthDate     DateTime?
+  city          String?
+  phoneNumber   String?
+  preferredHand Hand?
+  yearsPlaying  Int?
+  availabilitySlots AvailabilitySlot[]
+}
+
+enum Role {
+  PLAYER
+  TRAINER
+  ADMIN
+}
+
+enum Gender {
+  M
+  F
+}
+
+enum MenLevel {
+  P100
+  P200
+  P300
+  P400
+  P500
+  P700
+  P1000
+}
+
+enum WomenLevel {
+  P50
+  P100
+  P200
+  P300
+  P500
+  P700
+}
+
+enum Hand {
+  LEFT
+  RIGHT
+}
+
+model AvailabilitySlot {
+  id        String   @id
+  start     DateTime
+  end       DateTime
+  trainer   User     @relation(fields: [trainerId], references: [id])
+  trainerId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("availability_slots")
+}
+
+model Court {
+  id                    Int      @id @default(autoincrement())
+  courtId              Int   @unique // from Tennis Vlaanderen
+  isAvailableForLessons Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model CourtTimeSlot {
+  id                Int      @id @default(autoincrement())
+  courtId           Int
+  weekdayHighStart   String   // Time in HH:mm format
+  weekendStart      String   // Time in HH:mm format
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([courtId])
+}
